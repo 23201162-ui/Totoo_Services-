@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasker Dashboard - Totoo Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --sidebar-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR STYLES --- */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.03);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .profile-section {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-pic-display {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .profile-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .badges-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-id { background: #fef3c7; color: #d97706; }
+        .badge-role { background: #d1fae5; color: #059669; }
+
+        .nav-links {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #f5f3ff;
+            color: var(--primary);
+            border-right: 4px solid var(--primary);
+        }
+
+        .nav-link.logout:hover {
+            background-color: #fef2f2;
+            color: var(--danger);
+            border-right: 4px solid var(--danger);
+        }
+
+        /* --- MAIN CONTENT STYLES --- */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+        }
+
+        .alert-messages {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #0f5132;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        .status-row {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 10px;
+        }
+
+        .status-item span {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .status-item strong {
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .file-input-wrapper {
+            background: #f9fafb;
+            border: 1px dashed #d1d5db;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
+        /* --- TABLE LAYOUT CONFIGS FOR PAYMENTS --- */
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .ledger-table th {
+            text-align: left;
+            background: #f8fafc;
+            padding: 14px;
+            color: #475569;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+        .ledger-table td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .trx-code {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: static; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .status-row { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="profile-section">
+            {% if tasker.profile_pic %}
+                <img src="{{ tasker.profile_pic.url }}" alt="Profile Pic" class="profile-pic-display">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ tasker.user.username }}&background=4f46e5&color=fff&size=120" alt="Default Avatar" class="profile-pic-display">
+            {% endif %}
+
+            <div class="profile-name">{{ tasker.user.first_name|default:tasker.user.username }}</div>
+
+            <div class="badges-container">
+                <span class="badge badge-id"><i class="fa-solid fa-hashtag"></i> {{ tasker.totooid }}</span>
+                <span class="badge badge-role"><i class="fa-solid fa-briefcase"></i> {{ tasker.category }}</span>
+            </div>
+        </div>
+
+        <nav class="nav-links">
+            <a href="#" class="nav-link active">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="/" class="nav-link">
+                <i class="fa-solid fa-house"></i> Return to Home
+            </a>
+            <a href="/logout/" class="nav-link logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <h1>Welcome back, {{ tasker.user.first_name|default:tasker.user.username }}! 🛠️</h1>
+            <p style="color: var(--text-muted); margin-top: 5px;">Manage your profile and settings below.</p>
+        </div>
+
+        {% if messages %}
+            <div class="alert-messages">
+                {% for message in messages %}
+                    <div><i class="fa-solid fa-circle-info"></i> {{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <h3><i class="fa-solid fa-shield-halved"></i> Profile Status</h3>
+            <div class="status-row">
+                <div class="status-item">
+                    <span>Email Address</span>
+                    <strong>{{ tasker.user.email }}</strong>
+                </div>
+                <div class="status-item">
+                    <span>Account Approval</span>
+                    {% if tasker.is_approved %}
+                        <strong style="color: var(--success);"><i class="fa-solid fa-circle-check"></i> Approved! You can receive jobs.</strong>
+                    {% else %}
+                        <strong style="color: var(--danger);"><i class="fa-solid fa-clock"></i> Pending Admin Approval.</strong>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid #10b981;">
+            <h3><i class="fa-solid fa-wallet" style="color: #10b981;"></i> Earnings & Settlements Log (80% Net Split)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                Below are the funds processed securely through the Totoo checkout routing protocol. You receive 80% of the customer's total gross payment.
+            </p>
+            <div style="overflow-x: auto;">
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Tasker Settlement ID</th>
+                            <th>Job Category</th>
+                            <th>Gross Paid</th>
+                            <th>Your 80% Earnings</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in tasker.received_bookings.all %}
+                            {% if booking.status == 'Paid' or booking.status == 'Completed' %}
+                                <tr>
+                                    <td><span class="trx-code">SETTLE-{{ booking.id }}</span></td>
+                                    <td><strong>{{ tasker.category }}</strong></td>
+
+                                    <td>৳{{ booking.gross_price|floatformat:2 }}</td>
+
+                                    <td style="color: var(--success); font-weight: 700;">
+                                        ৳{{ booking.tasker_earnings|floatformat:2 }}
+                                    </td>
+
+                                    <td>
+                                        <span class="badge badge-role" style="background: #e6fcf5; color: #0ca678; padding: 4px 10px;">
+                                            <i class="fa-solid fa-money-bill-transfer"></i> Deposited
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                    No settled payments found on the system registry.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid #f59e0b;">
+            <h3><i class="fa-solid fa-bell" style="color: #f59e0b;"></i> New Job Requests</h3>
+
+            {% for booking in tasker.received_bookings.all %}
+                {% if booking.status == 'Pending' %}
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <h4 style="margin: 0; color: #92400e;">{{ booking.customer.first_name }} needs your help!</h4>
+                                <p style="margin: 5px 0 0; font-size: 0.85rem; color: #b45309;">
+                                    <i class="fa-solid fa-calendar-day"></i> {{ booking.booking_date }} at {{ booking.booking_time }}
+                                </p>
+                            </div>
+                            <span style="background: #fef3c7; color: #d97706; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                                Pending
+                            </span>
+                        </div>
+
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong><i class="fa-solid fa-map-pin"></i> Address:</strong> {{ booking.address }}
+                        </p>
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 15px; background: white; padding: 10px; border-radius: 5px;">
+                            <strong>Job Details:</strong> {{ booking.service_details }}
+                        </p>
+
+                        <div style="display: flex; gap: 10px;">
+                            <a href="{% url 'accept_booking' booking.id %}" style="text-decoration: none;">
+                                <button style="background: #10b981; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                    <i class="fa-solid fa-check"></i> Accept Job
+                                </button>
+                            </a>
+                            <a href="{% url 'cancel_booking' booking.id %}" style="text-decoration: none;">
+                                <button style="background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                    <i class="fa-solid fa-xmark"></i> Decline
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="card" style="border-left: 5px solid #0ea5e9;">
+            <h3><i class="fa-solid fa-briefcase" style="color: #0ea5e9;"></i> My Active Jobs</h3>
+
+            {% for booking in tasker.received_bookings.all %}
+                {% if booking.status == 'Accepted' or booking.status == 'Paid' %}
+                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <h4 style="margin: 0; color: #0369a1;">{{ booking.customer.first_name }}'s Job</h4>
+                                <p style="margin: 5px 0 0; font-size: 0.85rem; color: #0284c7;">
+                                    <i class="fa-solid fa-calendar-day"></i> {{ booking.booking_date }} at {{ booking.booking_time }}
+                                </p>
+                            </div>
+                            <div>
+                                {% if booking.status == 'Paid' %}
+                                    <span style="background: #d1e7dd; color: #0f5132; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-right: 5px;">
+                                        <i class="fa-solid fa-money-bill-wave"></i> Customer Paid
+                                    </span>
+                                {% else %}
+                                    <span style="background: #fee2e2; color: #991b1b; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-right: 5px;">
+                                        <i class="fa-solid fa-hourglass-half"></i> Awaiting Payment
+                                    </span>
+                                {% endif %}
+                                <span style="background: #e0f2fe; color: #0369a1; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                                    Active Execution
+                                </span>
+                            </div>
+                        </div>
+
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong><i class="fa-solid fa-map-pin"></i> Address:</strong> {{ booking.address }}
+                        </p>
+
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong><i class="fa-solid fa-phone"></i> Customer Phone:</strong>
+                            {% if booking.status == 'Paid' %}
+                                <a href="tel:{{ booking.customer.service_profile.phone_number }}" style="color: #4f46e5; font-weight: 600; text-decoration: none;">
+                                    {{ booking.customer.service_profile.phone_number|default:"No phone updated" }}
+                                </a>
+                            {% else %}
+                                <span style="color: #ef4444; font-size: 0.85rem; font-style: italic; font-weight: 500;">
+                                    Hidden until customer processes payment
+                                </span>
+                            {% endif %}
+                        </p>
+
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 15px; background: white; padding: 10px; border-radius: 5px;">
+                            <strong>Job Details:</strong> {{ booking.service_details }}
+                        </p>
+
+                        <div style="display: flex; gap: 10px;">
+                            {% if booking.status == 'Paid' %}
+                                <a href="{% url 'complete_booking' booking.id %}" style="text-decoration: none;">
+                                    <button style="background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                        <i class="fa-solid fa-check-double"></i> Mark as Completed
+                                    </button>
+                                </a>
+                            {% else %}
+                                <button disabled style="background: #9ca3af; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: not-allowed; font-weight: bold;" title="Waiting for client payment confirmation">
+                                    <i class="fa-solid fa-lock"></i> Mark as Completed (Locked)
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="card" style="border-left: 5px solid #10b981;">
+            <h3><i class="fa-solid fa-clock-rotate-left" style="color: #10b981;"></i> Completed Jobs History</h3>
+
+            {% for booking in tasker.received_bookings.all reversed %}
+                {% if booking.status == 'Completed' %}
+                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <h4 style="margin: 0; color: #065f46;">{{ booking.customer.first_name }}'s Job</h4>
+
+                                <p style="margin: 2px 0 0; font-size: 0.75rem; color: #047857; font-family: monospace;">
+                                    <i class="fa-solid fa-id-badge"></i> ID: {{ booking.customer.service_profile.toto_id }}
+                                </p>
+
+                                <p style="margin: 5px 0 0; font-size: 0.85rem; color: #047857;">
+                                    <i class="fa-solid fa-calendar-check"></i> Booked for: {{ booking.booking_date }}
+                                </p>
+                            </div>
+                            <span style="background: #d1fae5; color: #065f46; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                                <i class="fa-solid fa-check-circle"></i> Completed
+                            </span>
+                        </div>
+
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong><i class="fa-solid fa-map-pin"></i> Address:</strong> {{ booking.address }}
+                        </p>
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 0; background: white; padding: 10px; border-radius: 5px;">
+                            <strong>Job Details:</strong> {{ booking.service_details }}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-user-pen"></i> Update Your Details</h3>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone_number" value="{{ tasker.phone_number }}" class="form-control" placeholder="Enter your contact number">
+                </div>
+
+                <div class="form-group">
+                    <label>Home Address</label>
+                    <textarea name="address" rows="3" class="form-control" placeholder="Enter your full address">{{ tasker.address }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-address-card"></i> Work Bio (Service Info)</label>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">This will be displayed to customers when they are looking to hire you.</p>
+                    <textarea name="service_info" rows="4" class="form-control" placeholder="Hi! I have 5 years of experience and always deliver top-quality work...">{{ tasker.service_info }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-hand-holding-dollar"></i> Service Charge / Price (৳)</label>
+                    <input type="number" name="service_price" value="{{ tasker.service_price }}" class="form-control" placeholder="e.g. 500.00">
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Set a starting price for your services to attract customers.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Update Profile Picture</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="profile_pic" class="form-control" style="border: none; padding: 0;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <label><i class="fa-solid fa-images"></i> Verification Images (Upload up to 3)</label>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Upload certificates, IDs, or previous work examples.</p>
+
+                    <div class="file-input-wrapper">
+                        <input type="file" name="img1" class="form-control" style="border: none; padding: 0; margin-bottom: 10px;">
+                        <input type="file" name="img2" class="form-control" style="border: none; padding: 0; margin-bottom: 10px;">
+                        <input type="file" name="img3" class="form-control" style="border: none; padding: 0;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+</body>
+</html>

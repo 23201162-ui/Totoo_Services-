@@ -1,0 +1,135 @@
+<h2 style="text-align: center;">Admin Dashboard</h2>
+
+<h3>Administrator Table</h3>
+<table border="1" style="width:100%; margin-bottom: 20px; border-collapse: collapse; text-align: left;">
+    <tr style="background-color: #f2f2f2;">
+        <th style="padding: 8px;">Full Name</th>
+        <th style="padding: 8px;">Email</th>
+        <th style="padding: 8px; text-align: center;">Role ID</th>
+    </tr>
+    {% for prof in admins %}
+    <tr>
+        <td style="padding: 8px;">{{ prof.user.first_name|default:prof.user.username }}</td>
+        <td style="padding: 8px;">{{ prof.user.email }}</td>
+        <td style="padding: 8px; text-align: center;">{{ prof.role_id }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" style="padding: 8px; text-align: center;">No Admins found.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Developer Table</h3>
+<table border="1" style="width:100%; margin-bottom: 20px; border-collapse: collapse; text-align: left;">
+    <tr style="background-color: #f2f2f2;">
+        <th style="padding: 8px;">Full Name</th>
+        <th style="padding: 8px;">Email</th>
+        <th style="padding: 8px; text-align: center;">Role ID</th>
+    </tr>
+    {% for prof in developers %}
+    <tr>
+        <td style="padding: 8px;">{{ prof.user.first_name }}</td>
+        <td style="padding: 8px;">{{ prof.user.email }}</td>
+        <td style="padding: 8px; text-align: center;">{{ prof.role_id }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" style="padding: 8px; text-align: center;">No Developers found.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Service User Table</h3>
+<table border="1" style="width:100%; margin-bottom: 20px; border-collapse: collapse; text-align: left;">
+    <tr style="background-color: #f2f2f2;">
+        <th style="padding: 8px;">Full Name</th>
+        <th style="padding: 8px;">Email</th>
+        <th style="padding: 8px;">Phone Number</th>
+        <th style="padding: 8px; text-align: center;">Role ID</th>
+    </tr>
+    {% for prof in service_users %}
+    <tr>
+        <td style="padding: 8px;">{{ prof.user.first_name }}</td>
+        <td style="padding: 8px;">{{ prof.user.email }}</td>
+        <td style="padding: 8px;">{{ prof.user.service_profile.phone_number|default:"Not Provided" }}</td>
+        <td style="padding: 8px; text-align: center;">{{ prof.role_id }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4" style="padding: 8px; text-align: center;">No Service Users found.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h4>Tasker Table</h4>
+<table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="padding: 8px;">TotooID</th>
+            <th style="padding: 8px;">Full Name</th>
+            <th style="padding: 8px;">Email</th>
+            <th style="padding: 8px;">Phone Number</th>
+            <th style="padding: 8px; text-align: center;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tasker in taskers %}
+        <tr>
+            <td style="padding: 8px;"><strong>{{ tasker.totooid }}</strong></td>
+            <td style="padding: 8px;">{{ tasker.user.first_name }}</td>
+            <td style="padding: 8px;">{{ tasker.user.email }}</td>
+            <td style="padding: 8px;">{{ tasker.phone_number|default:"Not Provided" }}</td>
+            <td style="padding: 8px; text-align: center;">
+                {% if tasker.is_approved %}
+                    <span style="color: green;">Approved</span>
+                {% else %}
+                    <span style="color: red;">Pending</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" style="padding: 8px; text-align: center;">
+                No taskers have signed up yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<h2 style="margin-top:40px; font-family:sans-serif; color:#1e293b;">Payments Info Table</h2>
+<table style="width:100%; border-collapse:collapse; margin-top:15px; font-family:sans-serif; text-align:left; background:#fff; box-shadow:0 4px 6px rgba(0,0,0,0.05); border-radius:8px; overflow:hidden;">
+    <thead>
+        <tr style="background:#0f172a; color:#fff;">
+            <th style="padding:14px 18px;">User TrxID</th>
+            <th style="padding:14px 18px;">Tasker TrxID</th>
+            <th style="padding:14px 18px;">Service User (Role ID)</th>
+            <th style="padding:14px 18px;">Tasker (TotooID)</th>
+            <th style="padding:14px 18px;">Sent Amount</th>
+            <th style="padding:14px 18px;">Given (80%)</th>
+            <th style="padding:14px 18px;">Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments_info %}
+        <tr style="border-bottom:1px solid #e2e8f0;">
+            <td style="padding:14px 18px; font-weight:600; color:#2563eb;">{{ payment.user_transaction_id }}</td>
+            <td style="padding:14px 18px; font-weight:600; color:#10b981;">{{ payment.tasker_transaction_id }}</td>
+            <td style="padding:14px 18px;">{{ payment.service_user_role_id }}</td>
+            <td style="padding:14px 18px;"><span style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-weight:bold;">{{ payment.tasker_toto_id }}</span></td>
+            <td style="padding:14px 18px; font-weight:bold; color:#1e293b;">৳{{ payment.money_amount_sent }}</td>
+            <td style="padding:14px 18px; font-weight:bold; color:#059669;">৳{{ payment.money_amount_given }}</td>
+            <td style="padding:14px 18px; color:#64748b; font-size:0.85rem;">{{ payment.payment_date|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" style="padding:30px; text-align:center; color:#64748b;">No transaction data processed within the ledger system.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div style="text-align: center;">
+    <a href="{% url 'control_login' %}">Logout</a>
+</div>
